@@ -1,0 +1,15 @@
+[package]
+name = "ligate"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+github-flows = "0.5.1"
+ligab = "0.1.0"
+serde_json = "1.0.96"
+tokio_wasi = { version = "1.25.1", features = ["macros", "rt", "sync"] }
+
