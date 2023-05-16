@@ -33,11 +33,12 @@ async fn handle(
         let octo = get_octo(login);
 
         let number = e.issue.number;
+
+        _ = octo.issues(owner, repo).create_comment(number, "ok").await;
+
         if !comment.starts_with("liga") {
             return;
         }
-
-        _ = octo.issues(owner, repo).create_comment(number, "ok").await;
 
         let liga = Liga::from_token(token);
 
