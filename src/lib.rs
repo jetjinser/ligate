@@ -34,7 +34,14 @@ async fn handle(
 
         let number = e.issue.number;
 
-        _ = octo.issues(owner, repo).create_comment(number, "ok").await;
+        if e.comment.user.login != "jetjinser" {
+            return;
+        }
+
+        _ = octo
+            .issues(owner, repo)
+            .create_comment(number, &comment)
+            .await;
 
         if !comment.starts_with("liga") {
             return;
