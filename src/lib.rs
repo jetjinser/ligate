@@ -1,6 +1,6 @@
 use std::env;
 
-use github_flows::{listen_to_event, EventPayload, GithubLogin};
+use github_flows::{get_octo, listen_to_event, EventPayload, GithubLogin};
 use ligab::Liga;
 
 #[no_mangle]
@@ -14,26 +14,53 @@ pub async fn run() {
     let token = env::var("LIGA_TOKEN").unwrap();
 
     listen_to_event(&login, &owner, &repo, events, |payload| async {
-        handle(token, payload).await
+        handle(&login, &owner, &repo, token, payload).await
     })
     .await;
 }
 
-async fn handle(token: String, payload: EventPayload) {
+async fn handle(
+    login: &GithubLogin,
+    owner: &str,
+    repo: &str,
+    token: String,
+    payload: EventPayload,
+) {
     if let EventPayload::IssueCommentEvent(e) = payload {
         let title = e.issue.title;
-        let review = e.issue.body_text.unwrap_or_default();
+        let comment = e.comment.body_text.unwrap_or_default();
+
+        if !comment.starts_with("liga") {
+            return;
+        }
 
         let liga = Liga::from_token(token);
+        let octo = get_octo(login);
 
         let issue_type_id = 98537026;
         let data = serde_json::json!({
             "summary": title,
-            "description": review,
+            "description": comment,
             "status": 98536908,
         });
         let project_id = 98536876;
-        liga.issue()
-            .add::<_, serde_json::Value>(issue_type_id, data, project_id);
+        let res: serde_json::Value = liga.issue().add(issue_type_id, data, project_id);
+
+        let id = &res["data"]["id"].as_u64();
+
+        let number = e.issue.number;
+        if let Some(i) = id {
+            let url = format!("https://ligai.cn/app/work/table?pid={project_id}&issueid={i}");
+            let body = format!(
+                "You just created issue: {}\nplease visit {} to check it.",
+                i, url
+            );
+            _ = octo.issues(owner, repo).create_comment(number, body).await;
+        } else {
+            _ = octo
+                .issues(owner, repo)
+                .create_comment(number, "failed...")
+                .await;
+        }
     }
 }
