@@ -59,7 +59,10 @@ async fn handle(
         } else {
             _ = octo
                 .issues(owner, repo)
-                .create_comment(number, "failed...")
+                .create_comment(
+                    number,
+                    format!("failed...\n{:?}", serde_json::to_string(&res)),
+                )
                 .await;
         }
     }
