@@ -785,14 +785,15 @@ checksum = "f7012b1bbb0719e1097c47611d3898568c546d597c2e74d66f6087edd5233ff4"
 
 [[package]]
 name = "ligab"
-version = "0.1.0"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "341298c6c5316eb4284527f334e4e7c823025d42a3fcb4e57b7e2642832b0628"
+checksum = "9db1877fb9464230b92cde91ed2e78281301f4f9a42db317db32f250a45559df"
 dependencies = [
  "http",
  "http_req_wasi",
  "serde",
  "serde_json",
+ "serde_urlencoded",
 ]
 
 [[package]]

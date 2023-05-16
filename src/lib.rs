@@ -11,21 +11,25 @@ pub async fn run() {
     let repo = env::var("repo").unwrap_or("fot".to_string());
     let events = vec!["issue_comment"];
 
-    let token = env::var("LIGA_TOKEN").unwrap();
+    let token = env::var("LIGA_TOKEN");
+    let client_id = env::var("client_id");
+    let secret_key = env::var("secret_key");
+
+    let liga = if let Ok(t) = token {
+        Liga::from_token(t)
+    } else {
+        let client_id = client_id.unwrap();
+        let secret_key = secret_key.unwrap();
+        Liga::from_client(client_id, secret_key)
+    };
 
     listen_to_event(&login, &owner, &repo, events, |payload| async {
-        handle(&login, &owner, &repo, token, payload).await
+        handle(&login, &owner, &repo, liga, payload).await
     })
     .await;
 }
 
-async fn handle(
-    login: &GithubLogin,
-    owner: &str,
-    repo: &str,
-    token: String,
-    payload: EventPayload,
-) {
+async fn handle(login: &GithubLogin, owner: &str, repo: &str, liga: Liga, payload: EventPayload) {
     if let EventPayload::IssueCommentEvent(e) = payload {
         let title = e.issue.title;
         let body = e.issue.body.unwrap_or_default();
@@ -35,7 +39,6 @@ async fn handle(
             return;
         }
 
-        let liga = Liga::from_token(token);
         let octo = get_octo(login);
 
         let issue_type_id = 98537026;
