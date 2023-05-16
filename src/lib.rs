@@ -47,7 +47,6 @@ async fn handle(
         let res: serde_json::Value = liga.issue().add(issue_type_id, data, project_id);
 
         let id = &res["data"]["id"].as_u64();
-
         let number = e.issue.number;
         if let Some(i) = id {
             let url = format!("https://ligai.cn/app/work/table?pid={project_id}&issueid={i}");
