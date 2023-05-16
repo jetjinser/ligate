@@ -34,9 +34,9 @@ async fn handle(
 
         let number = e.issue.number;
 
-        if e.comment.user.login != "jetjinser" {
-            return;
-        }
+        // if e.comment.user.login != "jetjinser" {
+        //     return;
+        // }
 
         _ = octo
             .issues(owner, repo)
