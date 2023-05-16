@@ -28,6 +28,7 @@ async fn handle(
 ) {
     if let EventPayload::IssueCommentEvent(e) = payload {
         let title = e.issue.title;
+        let body = e.issue.body.unwrap_or_default();
         let comment = e.comment.body.unwrap_or_default();
 
         if !comment.starts_with("liga") {
@@ -40,7 +41,7 @@ async fn handle(
         let issue_type_id = 98537026;
         let data = serde_json::json!({
             "summary": title,
-            "description": comment,
+            "description": body,
             "status": 98536908,
         });
         let project_id = 98536876;
