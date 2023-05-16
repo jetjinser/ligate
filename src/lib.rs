@@ -40,7 +40,7 @@ async fn handle(
 
         _ = octo
             .issues(owner, repo)
-            .create_comment(number, &comment)
+            .create_comment(number, format!("you just said: {}", &comment))
             .await;
 
         if !comment.starts_with("liga") {
