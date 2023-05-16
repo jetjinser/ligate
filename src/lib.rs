@@ -28,26 +28,14 @@ async fn handle(
 ) {
     if let EventPayload::IssueCommentEvent(e) = payload {
         let title = e.issue.title;
-        let comment = e.comment.body_text.unwrap_or_default();
-
-        let octo = get_octo(login);
-
-        let number = e.issue.number;
-
-        // if e.comment.user.login != "jetjinser" {
-        //     return;
-        // }
-
-        _ = octo
-            .issues(owner, repo)
-            .create_comment(number, format!("you just said: {}", &comment))
-            .await;
+        let comment = e.comment.body.unwrap_or_default();
 
         if !comment.starts_with("liga") {
             return;
         }
 
         let liga = Liga::from_token(token);
+        let octo = get_octo(login);
 
         let issue_type_id = 98537026;
         let data = serde_json::json!({
@@ -60,6 +48,7 @@ async fn handle(
 
         let id = &res["data"]["id"].as_u64();
 
+        let number = e.issue.number;
         if let Some(i) = id {
             let url = format!("https://ligai.cn/app/work/table?pid={project_id}&issueid={i}");
             let body = format!(
