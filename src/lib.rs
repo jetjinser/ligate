@@ -55,8 +55,8 @@ async fn handle(login: &GithubLogin, owner: &str, repo: &str, liga: Liga, payloa
         if let Some(i) = id {
             let url = format!("https://ligai.cn/app/work/table?pid={project_id}&issueid={i}");
             let body = format!(
-                "You just created issue: {}\nplease visit {} to check it.",
-                i, url
+                "You just created a new issue!\nplease visit [LigaAI]({}) to check it.",
+                url
             );
             _ = octo.issues(owner, repo).create_comment(number, body).await;
         } else {
